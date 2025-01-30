@@ -2,21 +2,27 @@ import { CreatePlayerDTO } from './dtos/create-player.dto';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Player } from './interfaces/player.interface';
 import { randomUUID } from 'crypto';
+import { MyJsonBaseService } from 'src/my-json-base/my-json-base.service';
 
 @Injectable()
 export class PlayersService {
 
     private readonly logger = new Logger(PlayersService.name);
+    private readonly myJsonBaseService: MyJsonBaseService = new MyJsonBaseService();
     private players: Player[] = [];
+
+    constructor(){
+        this.myJsonBaseService.readData().then(data => this.players = data);
+    }
 
     async findAllPlayers(): Promise<Player[]> {
         this.logger.log(`List -> ${JSON.stringify(this.players)}`);
         return this.players;
     }
 
-    async findOnePlayer(email: string):Promise<Player>{
-        const findPlayer =await this.findPlayer(email);
-        if(!findPlayer){
+    async findOnePlayer(email: string): Promise<Player> {
+        const findPlayer = await this.findPlayer(email);
+        if (!findPlayer) {
             throw new NotFoundException(`Nenhum jogador encontrado com o e-mail ${email}`);
         }
         return findPlayer;
@@ -33,7 +39,7 @@ export class PlayersService {
 
     }
 
-    private create(createPlayerDTO: CreatePlayerDTO) {
+    private async create(createPlayerDTO: CreatePlayerDTO) {
         const { name, phone, email } = createPlayerDTO;
         const player: Player = {
             _id: randomUUID(),
@@ -47,23 +53,29 @@ export class PlayersService {
 
         this.logger.log(`createPlayerDTO -> ${JSON.stringify(player)}`)
         this.players.push(player);
+        this.saveData();
     }
-
-
-    private update(findPlayer:Player, createPlayerDTO:CreatePlayerDTO): void{
-        const {name} = createPlayerDTO;
+    
+    
+    private update(findPlayer: Player, createPlayerDTO: CreatePlayerDTO): void {
+        const { name } = createPlayerDTO;
         findPlayer.name = name;
+        this.saveData();
     }
 
-    async deletePlayer(email:string): Promise<void>{
-        const findPlayer =await this.findPlayer(email);
+    async deletePlayer(email: string): Promise<void> {
+        const findPlayer = await this.findPlayer(email);
 
         this.players = this.players.filter(p => p.email != findPlayer?.email);
-
     }
 
-    private async findPlayer(email:string): Promise<Player | undefined>{
+    private async findPlayer(email: string): Promise<Player | undefined> {
         return this.players.find(p => p.email == email)
+    }
+
+    private async saveData() {
+        await this.myJsonBaseService.writeData(this.players);
+        this.logger.log({ message: 'Salvo sucesso!'});
     }
 
 }
