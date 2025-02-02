@@ -1,8 +1,9 @@
 import { CreatePlayerDTO } from './dtos/create-player.dto';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Player } from './interfaces/player.interface';
 import { randomUUID } from 'crypto';
 import { MyJsonBaseService } from 'src/my-json-base/my-json-base.service';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class PlayersService {
@@ -21,21 +22,38 @@ export class PlayersService {
     }
 
     async findOnePlayer(email: string): Promise<Player> {
-        const findPlayer = await this.findPlayer(email);
+        const findPlayer = await this.findPlayer('email', email);
         if (!findPlayer) {
             throw new NotFoundException(`Nenhum jogador encontrado com o e-mail ${email}`);
         }
         return findPlayer;
     }
 
-    async createUpdatePlayer(createPlayerDTO: CreatePlayerDTO): Promise<void> {
-        const { email } = createPlayerDTO;
-        const findPlayer = await this.findPlayer(email);
-        if (findPlayer) {
-            await this.update(findPlayer, createPlayerDTO);
-        } else {
-            await this.create(createPlayerDTO);
+    async findOnePlayerById(_id: string): Promise<Player> {
+        const findPlayer = await this.findPlayer('_id', _id);
+        if (!findPlayer) {
+            throw new NotFoundException(`Nenhum jogador encontrado com o e-mail ${_id}`);
         }
+        return findPlayer;
+    }
+
+    async createPlayer(createPlayerDTO: CreatePlayerDTO): Promise<void> {
+        const { email } = createPlayerDTO;
+        const findPlayer = await this.findPlayer('email', email);
+        if (findPlayer) {
+            throw new BadRequestException('Jogador com e-mail já cadastrado.')
+        }
+
+        await this.create(createPlayerDTO);
+    }
+
+    async updatePlayer(_id:string, createPlayerDTO: CreatePlayerDTO): Promise<void> {
+        const findPlayer = await this.findPlayer('_id', _id);
+        if (!findPlayer) {
+            throw new NotFoundException('Jogador com id não encontrado.')
+        }
+
+        await this.update(findPlayer, createPlayerDTO);
 
     }
 
@@ -64,13 +82,13 @@ export class PlayersService {
     }
 
     async deletePlayer(email: string): Promise<void> {
-        const findPlayer = await this.findPlayer(email);
+        const findPlayer = await this.findPlayer('email', email);
 
         this.players = this.players.filter(p => p.email != findPlayer?.email);
     }
 
-    private async findPlayer(email: string): Promise<Player | undefined> {
-        return this.players.find(p => p.email == email)
+    private async findPlayer(param: string, value:any): Promise<Player | undefined> {
+        return this.players.find(p => p[param] == value)
     }
 
     private async saveData() {

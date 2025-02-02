@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreatePlayerDTO } from './dtos/create-player.dto';
 import { PlayersService } from './players.service';
 import { Player } from './interfaces/player.interface';
-import { MyJsonBaseService } from 'src/my-json-base/my-json-base.service';
+import { PlayersValidationParamsPipe } from './pipes/players-validation-params.pipe';
 
 @Controller('api/v1/players')
 export class PlayersController {
@@ -11,25 +11,34 @@ export class PlayersController {
 
     @Get()
     async findAllPlayers(
-        @Query('email') email: string
-    ): Promise<Player[] | Player> {
-        if (email) {
-            return await this.playersService.findOnePlayer(email);
-        }
+    ): Promise<Player[]> {
         return await this.playersService.findAllPlayers();
+    }
+
+    @Get('/:_id')
+    async findOnePlayer(
+        @Param('_id', PlayersValidationParamsPipe) _id: string
+    ): Promise<Player> {
+        return await this.playersService.findOnePlayerById(_id);
     }
 
 
     @Post()
-    async createUpdatePlayer(@Body() createPlayerDTO: CreatePlayerDTO) {
-        const { email } = createPlayerDTO;
-        this.playersService.createUpdatePlayer(createPlayerDTO);
+    @UsePipes(ValidationPipe)
+    async createPlayer(@Body() createPlayerDTO: CreatePlayerDTO) {
+        this.playersService.createPlayer(createPlayerDTO);
     }
 
-    @Delete()
+    @Put('/:_id')
+    @UsePipes(ValidationPipe)
+    async updatePlayer(@Body() createPlayerDTO: CreatePlayerDTO, @Param('_id', PlayersValidationParamsPipe) _id:string): Promise<void> {
+        this.playersService.updatePlayer(_id, createPlayerDTO);
+    }
+
+    @Delete('/:_id')
     async deletePlayer(
-        @Query('email') email: string
+        @Param('_id', PlayersValidationParamsPipe) _id:string
     ): Promise<void> {
-        this.playersService.deletePlayer(email);
+        this.playersService.deletePlayer(_id);
     }
 }
