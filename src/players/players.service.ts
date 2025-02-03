@@ -3,7 +3,7 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { Player } from './interfaces/player.interface';
 import { randomUUID } from 'crypto';
 import { MyJsonBaseService } from 'src/my-json-base/my-json-base.service';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { UpdatePlayerDTO } from './dtos/update-player.dto';
 
 @Injectable()
 export class PlayersService {
@@ -32,7 +32,7 @@ export class PlayersService {
     async findOnePlayerById(_id: string): Promise<Player> {
         const findPlayer = await this.findPlayer('_id', _id);
         if (!findPlayer) {
-            throw new NotFoundException(`Nenhum jogador encontrado com o e-mail ${_id}`);
+            throw new NotFoundException(`Nenhum jogador encontrado com id ${_id}`);
         }
         return findPlayer;
     }
@@ -47,13 +47,13 @@ export class PlayersService {
         await this.create(createPlayerDTO);
     }
 
-    async updatePlayer(_id:string, createPlayerDTO: CreatePlayerDTO): Promise<void> {
+    async updatePlayer(_id:string, updatePlayerDTO: UpdatePlayerDTO): Promise<void> {
         const findPlayer = await this.findPlayer('_id', _id);
         if (!findPlayer) {
             throw new NotFoundException('Jogador com id não encontrado.')
         }
 
-        await this.update(findPlayer, createPlayerDTO);
+        await this.update(findPlayer, updatePlayerDTO);
 
     }
 
@@ -75,16 +75,16 @@ export class PlayersService {
     }
     
     
-    private update(findPlayer: Player, createPlayerDTO: CreatePlayerDTO): void {
-        const { name } = createPlayerDTO;
+    private update(findPlayer: Player, updatePlayerDTO: UpdatePlayerDTO): void {
+        const { name } = updatePlayerDTO;
         findPlayer.name = name;
         this.saveData();
     }
 
-    async deletePlayer(email: string): Promise<void> {
-        const findPlayer = await this.findPlayer('email', email);
+    async deletePlayer(_id: string): Promise<void> {
+        const findPlayer = await this.findPlayer('_id', _id);
 
-        this.players = this.players.filter(p => p.email != findPlayer?.email);
+        this.players = this.players.filter(p => p._id != findPlayer?._id);
     }
 
     private async findPlayer(param: string, value:any): Promise<Player | undefined> {
