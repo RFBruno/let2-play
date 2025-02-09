@@ -4,8 +4,9 @@ import { PlayersService } from './players.service';
 import { Player } from './interfaces/player.interface';
 import { PlayersValidationParamsPipe } from './pipes/players-validation-params.pipe';
 import { UpdatePlayerDTO } from './dtos/update-player.dto';
+import { Api } from 'src/util/serve-path';
 
-@Controller('api/v1/players')
+@Controller(`${Api.APIV1}/players`)
 export class PlayersController {
 
     constructor(private readonly playersService: PlayersService) { }
