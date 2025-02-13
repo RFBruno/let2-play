@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "53210daa-08ca-4cd0-a8e2-252c06e8a669",
+    "name": "Teste",
+    "phone": "+5511994604784",
+    "email": "1@gmail.com",
+    "positionRanking": 1,
+    "ranking": "a",
+    "urlPhoto": "asdf"
+  },
+  {
+    "_id": "24ca9816-2b4f-4417-8ca1-054664dab17e",
+    "name": "Teste",
+    "phone": "+5511994604784",
+    "email": "2@gmail.com",
+    "positionRanking": 1,
+    "ranking": "a",
+    "urlPhoto": "asdf"
+  }
+]

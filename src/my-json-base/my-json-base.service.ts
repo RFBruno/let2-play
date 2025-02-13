@@ -4,9 +4,10 @@ import * as path from 'path';
 
 @Injectable()
 export class MyJsonBaseService {
-    private filePath = path.resolve(__dirname, 'database.json');
-
-    async readData(): Promise<any[]> {
+    private filePath:string;
+    
+    async readData(basename:string): Promise<any[]> {
+        this.filePath = path.resolve(`src/my-json-base/base/${basename}.json`);
         try {
             const data = await fs.promises.readFile(this.filePath, 'utf-8');
             return JSON.parse(data || '[]');

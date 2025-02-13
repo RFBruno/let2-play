@@ -13,7 +13,7 @@ export class PlayersService {
     private players: Player[] = [];
 
     constructor(){
-        this.myJsonBaseService.readData().then(data => this.players = data);
+        this.myJsonBaseService.readData("players").then(data => this.players = data);
     }
 
     async findAllPlayers(): Promise<Player[]> {
@@ -41,7 +41,7 @@ export class PlayersService {
         const { email } = createPlayerDTO;
         const findPlayer = await this.findPlayer('email', email);
         if (findPlayer) {
-            throw new BadRequestException('Jogador com e-mail já cadastrado.')
+            throw new BadRequestException('Jogador com e-mail já cadastrado.');
         }
 
         await this.create(createPlayerDTO);
@@ -50,7 +50,7 @@ export class PlayersService {
     async updatePlayer(_id:string, updatePlayerDTO: UpdatePlayerDTO): Promise<void> {
         const findPlayer = await this.findPlayer('_id', _id);
         if (!findPlayer) {
-            throw new NotFoundException('Jogador com id não encontrado.')
+            throw new NotFoundException('Jogador com id não encontrado.');
         }
 
         await this.update(findPlayer, updatePlayerDTO);

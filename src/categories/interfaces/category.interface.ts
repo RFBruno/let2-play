@@ -3,7 +3,7 @@ import { Player } from "src/players/interfaces/player.interface";
 export interface Category {
     readonly category: string;
     description: string;
-    event: Array<Event>;
+    events: Array<Event>;
     players: Array<Player>;
 }
 
