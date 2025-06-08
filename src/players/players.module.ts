@@ -6,6 +6,7 @@ import { MyJsonBaseModule } from 'src/my-json-base/my-json-base.module';
 @Module({
   imports:[MyJsonBaseModule],
   controllers: [PlayersController],
-  providers: [PlayersService]
+  providers: [PlayersService],
+  exports: [PlayersService],
 })
 export class PlayersModule { }

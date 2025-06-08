@@ -1,8 +1,10 @@
+import { PlayersService } from './../players/players.service';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDTO } from './dtos/create-category.dto';
 import { MyJsonBaseService } from 'src/my-json-base/my-json-base.service';
 import { Category } from './interfaces/category.interface';
 import { randomUUID } from 'crypto';
+import { UpdateCategoryDTO } from './dtos/update-category.dto copy';
 
 @Injectable()
 export class CategoriesService {
@@ -11,7 +13,9 @@ export class CategoriesService {
     private readonly myJsonBaseService: MyJsonBaseService = new MyJsonBaseService();
     private categories: Category[] = [];
 
-    constructor() {
+    constructor(
+        private readonly playersService: PlayersService
+    ) {
         this.myJsonBaseService.readData("categories").then(data => this.categories = data);
     }
 
@@ -25,6 +29,15 @@ export class CategoriesService {
         return await this.create(createCategoryDTO);
     }
 
+    async updateCategory(category: string, updateCategory: UpdateCategoryDTO) {
+        const findCategory = await this.findOne(category);
+        if (!findCategory) {
+            throw new NotFoundException(`Nenhuma categoria encontrada.`);
+        }
+
+        await this.update(findCategory, updateCategory);
+    }
+
     async findAll(): Promise<Category[]> {
         this.logger.log(`List -> ${JSON.stringify(this.categories)}`);
         return this.categories;
@@ -36,6 +49,23 @@ export class CategoriesService {
             throw new NotFoundException(`Nenhuma categoria encontrada.`);
         }
         return findCategory;
+    }
+    
+    async setCategoryPlayer(params: string[]) {
+        const category: string = params['category']?.toUpperCase();
+        const idPlayer = params['idPlayer'];
+
+        const findCategory: Category = await this.findOne(category);
+        if (!findCategory) {
+            throw new NotFoundException(`Nenhuma categoria encontrada.`);
+        }
+        const playerInCategory = this.findPlayerInCategory(findCategory, idPlayer);
+        if (playerInCategory) {
+            throw new NotFoundException(`Jogador ${idPlayer} já cadastrado na Categoria ${category}.`);
+        }
+        await this.playersService.findOnePlayerById(idPlayer);
+        findCategory.players.push(idPlayer);
+        this.saveData();
     }
 
     private async create(createCategoryDTO: CreateCategoryDTO) {
@@ -54,11 +84,12 @@ export class CategoriesService {
     }
 
 
-    // private update(findPlayer: Category, updatePlayerDTO: Object): void {
-    //     const { name } = updatePlayerDTO;
-    //     findPlayer.name = name;
-    //     this.saveData();
-    // }
+    private update(findCategory: Category, updateCategory: UpdateCategoryDTO): void {
+        const { description } = updateCategory;
+        findCategory.description = description;
+        this.logger.log(`Category update -> ${JSON.stringify(updateCategory)}`);
+        this.saveData();
+    }
 
     // async deletePlayer(_id: string): Promise<void> {
     //     const findPlayer = await this.findPlayer('_id', _id);
@@ -68,6 +99,11 @@ export class CategoriesService {
 
     private async findCategory(param: string, value: any): Promise<Category | undefined> {
         return this.categories.find(p => p[param] == value)
+    }
+
+    private findPlayerInCategory(category: Category, idPlayer: string) {
+        const findPlayer = category.players?.find(p => p._id === idPlayer);
+        return findPlayer ?? false
     }
 
     private async saveData() {
