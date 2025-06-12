@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes, Valid
 import { CreatePlayerDTO } from './dtos/create-player.dto';
 import { PlayersService } from './players.service';
 import { Player } from './interfaces/player.interface';
-import { PlayersValidationParamsPipe } from './pipes/players-validation-params.pipe';
+import { ValidationParamsPipe } from '../common/pipes/validation-params.pipe';
 import { UpdatePlayerDTO } from './dtos/update-player.dto';
 import { Api } from 'src/util/serve-path';
 

@@ -36,7 +36,7 @@ export class CategoriesController {
     async updatePlayer(@Body() updateCategory: UpdateCategoryDTO, @Param('category') category: string): Promise<void> {
         this.categoriesService.updateCategory(category.toUpperCase(), updateCategory);
     }
-    
+
     @Post('/:category/players/:idPlayer')
     async setCategoryPlayer(
         @Param() params: string[]
