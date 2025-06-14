@@ -4,13 +4,13 @@ import { Event } from '../interfaces/category.interface';
 export class CreateCategoryDTO {
     @IsString()
     @IsNotEmpty()
-    readonly category: string;
+    readonly category!: string;
 
     @IsString()
     @IsNotEmpty()
-    description: string;
+    description!: string;
     
     @IsArray()
     @ArrayMinSize(1)
-    events: Array<Event>;
+    events!: Array<Event>;
 }

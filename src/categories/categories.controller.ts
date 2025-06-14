@@ -34,13 +34,13 @@ export class CategoriesController {
     @Put('/:category')
     @UsePipes(ValidationPipe)
     async updatePlayer(@Body() updateCategory: UpdateCategoryDTO, @Param('category') category: string): Promise<void> {
-        this.categoriesService.updateCategory(category.toUpperCase(), updateCategory);
+        await this.categoriesService.updateCategory(category.toUpperCase(), updateCategory);
     }
 
     @Post('/:category/players/:idPlayer')
     async setCategoryPlayer(
         @Param() params: string[]
     ): Promise<void> {
-        this.categoriesService.setCategoryPlayer(params);
+        await this.categoriesService.setCategoryPlayer(params);
     }
 }

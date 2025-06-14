@@ -4,7 +4,7 @@ import * as path from 'path';
 
 @Injectable()
 export class MyJsonBaseService {
-    private filePath:string;
+    private filePath!:string;
     
     async readData(basename:string): Promise<any[]> {
         this.filePath = path.resolve(`src/my-json-base/base/${basename}.json`);

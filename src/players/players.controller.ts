@@ -29,13 +29,13 @@ export class PlayersController {
     @Post()
     @UsePipes(ValidationPipe)
     async createPlayer(@Body() createPlayerDTO: CreatePlayerDTO) {
-        this.playersService.createPlayer(createPlayerDTO);
+        await this.playersService.createPlayer(createPlayerDTO);
     }
 
     @Put('/:_id')
     @UsePipes(ValidationPipe)
     async updatePlayer(@Body() updatePlayer: UpdatePlayerDTO, @Param('_id') _id:string): Promise<void> {
-        this.playersService.updatePlayer(_id, updatePlayer);
+        await this.playersService.updatePlayer(_id, updatePlayer);
     }
 
     @Delete('/:_id')
@@ -43,6 +43,6 @@ export class PlayersController {
     async deletePlayer(
         @Param('_id') _id:string
     ): Promise<void> {
-        this.playersService.deletePlayer(_id);
+        await this.playersService.deletePlayer(_id);
     }
 }
