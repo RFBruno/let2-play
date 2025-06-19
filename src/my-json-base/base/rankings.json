@@ -1,0 +1,28 @@
+[{
+	"challenge":"",
+	"match":"",
+	"category": "A",
+	"player":"534e5168-8baf-11ea-bc55-0242ac130003",
+	"event":"VITORIA",
+	"operation":"+",
+	"points":"100"
+},
+{
+	"challenge":"",
+	"match":"",
+	"category": "A",
+	"player":"534e5168-8baf-11ea-bc55-0242ac130003",
+	"event":"VITORIA_LIDER",
+	"operation":"+",
+	"points":"100"
+},
+{
+	"challenge":"",
+	"match":"",
+	"category": "A",
+	"jogador":"534e5168-8baf-11ea-bc55-0242ac130003",
+	"event":"DERROTA",
+	"operation":"+",
+	"points":"0"
+}
+]
