@@ -50,6 +50,16 @@ export class CategoriesService {
         }
         return findCategory;
     }
+
+    async findCategoryPlayer(id: string): Promise<Category> {
+        const findCategory = this.categories.find(category => {
+            return category.players.find(p => p._id === id);
+        });
+        if (!findCategory) {
+            throw new NotFoundException(`Nenhuma categoria encontrada.`);
+        }
+        return findCategory;
+    }
     
     async setCategoryPlayer(params: string[]) {
         const category: string = params['category']?.toUpperCase();
@@ -64,13 +74,17 @@ export class CategoriesService {
             throw new NotFoundException(`Jogador ${idPlayer} já cadastrado na Categoria ${category}.`);
         }
         await this.playersService.findOnePlayerById(idPlayer);
-        findCategory.players.push(idPlayer);
+        const player = {
+            _id:idPlayer,
+        };
+        findCategory.players.push(player);
         this.saveData();
     }
 
     private async create(createCategoryDTO: CreateCategoryDTO) {
         const { category, description, events } = createCategoryDTO;
         const categoryObj: Category = {
+            _id: randomUUID(),
             category,
             description,
             events,

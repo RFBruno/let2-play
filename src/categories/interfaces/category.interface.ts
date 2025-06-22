@@ -1,10 +1,10 @@
-import { Player } from "src/players/interfaces/player.interface";
 
 export interface Category {
+    readonly _id: string;
     readonly category: string;
     description: string;
     events: Array<Event>;
-    players: Array<Player>;
+    players: Array<{_id:string}>;
 }
 
 export interface Event {
