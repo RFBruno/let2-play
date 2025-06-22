@@ -1,0 +1,26 @@
+[
+  {
+    "_id": "cb75844d-badd-4cd3-89ea-419e0d0491de",
+    "applicant": "24ca9816-2b4f-4417-8ca1-054664dab17e",
+    "players": [
+      "53210daa-08ca-4cd0-a8e2-252c06e8a669",
+      "24ca9816-2b4f-4417-8ca1-054664dab17e"
+    ],
+    "category": "B",
+    "dateTimeRequest": "2025-06-22T15:20:03.852Z",
+    "status": "CANCELADO",
+    "dateTimeChallenge": "2025-07-04 19:00:00"
+  },
+  {
+    "_id": "304e3845-e1b2-4ae0-aea4-5c5b744a15bc",
+    "dateTimeChallenge": "2025-07-22T18:00:00.000Z",
+    "applicant": "24ca9816-2b4f-4417-8ca1-054664dab17e",
+    "players": [
+      "53210daa-08ca-4cd0-a8e2-252c06e8a669",
+      "24ca9816-2b4f-4417-8ca1-054664dab17e"
+    ],
+    "category": "B",
+    "dateTimeRequest": "2025-06-22T14:25:27.231Z",
+    "status": "ACEITO"
+  }
+]

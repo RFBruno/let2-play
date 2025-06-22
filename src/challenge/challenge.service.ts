@@ -1,3 +1,4 @@
+import { ChallengeStatus } from './interfaces/challenge-status.enum';
 import { CategoriesService } from './../categories/categories.service';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
@@ -41,7 +42,7 @@ export class ChallengeService {
     if (!categoryPlayer) {
       throw new BadRequestException(`O solicitante precisa estar registrado em uma categoria!`)
     }
-    // return await this.create(createChallengeDto);
+    return await this.create(createChallengeDto, categoryPlayer.category);
   }
 
   findAll() {
@@ -57,21 +58,45 @@ export class ChallengeService {
     return findChallenge;
   }
 
-  update(id: number, updateChallengeDto: UpdateChallengeDto) {
-    return `This action updates a #${id} challenge`;
+  async findChallengePlayer(id: string) {
+    const findChallenge = this.challenges.filter(challenge => challenge.players.includes(id));
+    if (!findChallenge) {
+      throw new NotFoundException(`Nenhuma desafio encontrado.`);
+    }
+    return findChallenge;
+  }
+
+  async update(id: string, updateChallengeDto: UpdateChallengeDto) {
+    const findChallenge = await this.findOne(id);
+
+    if(updateChallengeDto.status){
+      findChallenge.dateTimeRequest = new Date();
+      findChallenge.status = updateChallengeDto.status.toUpperCase();
+    }
+    
+    if(updateChallengeDto.dateTimeChallenge){
+      findChallenge.dateTimeChallenge = updateChallengeDto.dateTimeChallenge;
+    }
+    
+
+    this.saveData();
+    return findChallenge;
   }
 
   remove(id: number) {
     return `This action removes a #${id} challenge`;
   }
 
-  private async create(createChallengeDto: CreateChallengeDto) {
-    const { dateTimeChallenge, applicant, players } = createChallengeDto;
+  private async create(createChallengeDto: CreateChallengeDto, category:string) {
+    const { dateTimeChallenge, applicant, players,  } = createChallengeDto;
     const challengeObj: Challenge = {
       _id: randomUUID(),
       dateTimeChallenge,
       applicant,
-      players: players.map(p => p._id)
+      players: players.map(p => p._id),
+      category,
+      dateTimeRequest: new Date(),
+      status: ChallengeStatus.PENDENTE
     }
 
     this.logger.log(`createChallengeDto -> ${JSON.stringify(challengeObj)}`)

@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe, Query } from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { Api } from 'src/util/serve-path';
+import { Challenge } from './interfaces/challenge.interface';
+import { ChallengeStatusValidation } from './pipe/challenge-status-validation.pipe';
 
 @Controller(`${Api.APIV1}/challenge`)
 export class ChallengeController {
@@ -10,8 +12,8 @@ export class ChallengeController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  async create(@Body() createChallengeDto: CreateChallengeDto): Promise<void>  {
-      await this.challengeService.createChallenge(createChallengeDto);
+  async create(@Body() createChallengeDto: CreateChallengeDto): Promise<Challenge>  {
+      return await this.challengeService.createChallenge(createChallengeDto);
   }
 
   @Get()
@@ -24,9 +26,15 @@ export class ChallengeController {
     return this.challengeService.findOne(id);
   }
 
+  @Get()
+  findChallengePlayer(@Query('playerId') id: string) {
+    return this.challengeService.findChallengePlayer(id);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChallengeDto: UpdateChallengeDto) {
-    return this.challengeService.update(+id, updateChallengeDto);
+  async update( @Param('id') id: string,
+    @Body(ChallengeStatusValidation) updateChallengeDto: UpdateChallengeDto) {
+    return await this.challengeService.update(id, updateChallengeDto);
   }
 
   @Delete(':id')
