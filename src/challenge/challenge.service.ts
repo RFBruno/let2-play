@@ -3,10 +3,11 @@ import { CategoriesService } from './../categories/categories.service';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
-import { Challenge } from './interfaces/challenge.interface';
+import { Challenge, Match } from './interfaces/challenge.interface';
 import { MyJsonBaseService } from 'src/my-json-base/my-json-base.service';
 import { PlayersService } from 'src/players/players.service';
 import { randomUUID } from 'crypto';
+import { MatchChallengeDto } from './dto/match-challenge.dto';
 
 
 @Injectable()
@@ -69,26 +70,58 @@ export class ChallengeService {
   async update(id: string, updateChallengeDto: UpdateChallengeDto) {
     const findChallenge = await this.findOne(id);
 
-    if(updateChallengeDto.status){
+    if (updateChallengeDto.status) {
       findChallenge.dateTimeRequest = new Date();
       findChallenge.status = updateChallengeDto.status.toUpperCase();
     }
-    
-    if(updateChallengeDto.dateTimeChallenge){
+
+    if (updateChallengeDto.dateTimeChallenge) {
       findChallenge.dateTimeChallenge = updateChallengeDto.dateTimeChallenge;
     }
-    
+
 
     this.saveData();
     return findChallenge;
   }
 
-  remove(id: number) {
+
+  async updateMatchChallenge(id: string, updateMatchDto: MatchChallengeDto): Promise<void> {
+
+    const findChallenge = await this.findOne(id);
+
+    if (!findChallenge) {
+      throw new BadRequestException(`Desafio ${id} não cadastrado!`)
+    }
+
+    const findPlayer = findChallenge.players.filter(playerId => playerId == updateMatchDto.def);
+
+    this.logger.log(`desafioEncontrado: ${findChallenge}`);
+    this.logger.log(`jogadorFilter: ${findPlayer}`)
+
+    if (findPlayer.length == 0) {
+      throw new BadRequestException(`O jogador vencedor não faz parte do desafio!`)
+    }
+
+    const matchCreated: Match = {
+      _id: randomUUID(),
+      def: updateMatchDto.def,
+      result: updateMatchDto.result
+    };
+
+
+    findChallenge.match = matchCreated;
+    findChallenge.status = ChallengeStatus.REALIZADO;
+  
+    this.saveData();
+
+  }
+
+  remove(id: string) {
     return `This action removes a #${id} challenge`;
   }
 
-  private async create(createChallengeDto: CreateChallengeDto, category:string) {
-    const { dateTimeChallenge, applicant, players,  } = createChallengeDto;
+  private async create(createChallengeDto: CreateChallengeDto, category: string) {
+    const { dateTimeChallenge, applicant, players, } = createChallengeDto;
     const challengeObj: Challenge = {
       _id: randomUUID(),
       dateTimeChallenge,
@@ -113,4 +146,5 @@ export class ChallengeService {
     await this.myJsonBaseService.writeData(this.challenges);
     this.logger.log({ message: 'Salvo sucesso!' });
   }
+
 }

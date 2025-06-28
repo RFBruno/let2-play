@@ -8,8 +8,20 @@
     ],
     "category": "B",
     "dateTimeRequest": "2025-06-22T15:20:03.852Z",
-    "status": "CANCELADO",
-    "dateTimeChallenge": "2025-07-04 19:00:00"
+    "status": "REALIZADO",
+    "dateTimeChallenge": "2025-07-04 19:00:00",
+    "match": {
+      "_id": "f16ea514-0c66-4b75-8f3e-55f1a63cf89a",
+      "def": "53210daa-08ca-4cd0-a8e2-252c06e8a669",
+      "result": [
+        {
+          "set": "6-1"
+        },
+        {
+          "set": "6-3"
+        }
+      ]
+    }
   },
   {
     "_id": "304e3845-e1b2-4ae0-aea4-5c5b744a15bc",
